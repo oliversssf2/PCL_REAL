@@ -2,7 +2,7 @@
 // Created by fongsu on 3/2/19.
 //
 
-#include "../includes/visualizer.h"
+#include "visualizer.h"
 
 pcl::visualization::PCLVisualizer::Ptr simpleVis (pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud)
 {

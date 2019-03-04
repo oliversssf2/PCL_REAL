@@ -1,15 +1,13 @@
-set(SUBDIRECTORIES visualizer)
+set(SUBDIRECTORIES visualizer includes)
+
+set(DEP_LIST)
+set(INC_LIST)
 
 foreach(element ${SUBDIRECTORIES})
     add_subdirectory(${element})
 endforeach()
 
-set(DEP_LIST)
-set(INC_LIST)
-
 add_executable(Main main)
-
-set(TARGETS Main)
 
 #use PUBLIC to propagate the properties to other dependencies
 target_include_directories(Main PUBLIC ${PCL_INCLUDE_DIRECTORIES})

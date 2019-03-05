@@ -18,5 +18,7 @@ pcl::visualization::PCLVisualizer::Ptr twoViewports(
         pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr);
 
 pcl::visualization::PCLVisualizer::Ptr simpleVis (pcl::PointCloud<pcl::PointXYZ>::ConstPtr);
-
+pcl::visualization::PCLVisualizer::Ptr twoViewportsBW(
+        pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
+        pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud2);
 #endif //PCL_REAL_VISUALIZER_H

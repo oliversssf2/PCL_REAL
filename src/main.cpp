@@ -8,15 +8,15 @@
 #include "../visualizer/visualizer.h"
 
 int main() {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
 
-    pcl::io::loadPCDFile<pcl::PointXYZRGB>("../prefabs/table_scene_lms400.pcd", *cloud);
+    pcl::io::loadPCDFile<pcl::PointXYZ>("../prefabs/table_scene_lms400.pcd", *cloud);
 
-    std::cerr << "PointCloude before filtering: " << cloud->width * cloud->height
+    std::cerr << "PointCloud before filtering: " << cloud->width * cloud->height
               << " data points (" << pcl::getFieldsList(*cloud) << ")>";
 
-    pcl::VoxelGrid<pcl::PointXYZRGB> sor;
+    pcl::VoxelGrid<pcl::PointXYZ> sor;
     sor.setInputCloud(cloud);
     sor.setLeafSize(0.01f, 0.01f, 0.01f);
     sor.filter(*cloud_filtered);
@@ -25,12 +25,13 @@ int main() {
               << " data points (" << pcl::getFieldsList(*cloud_filtered) << ").";
 
 
-    auto viewer = twoViewports(cloud, cloud_filtered);
+    auto viewer = twoViewportsBW(cloud, cloud_filtered);
 
     while(!viewer->wasStopped())
     {
         viewer->spinOnce(100);
         boost::this_thread::sleep (boost::posix_time::microseconds(100000));
     }
+    //.jlpqwefpoipoij
 }
 

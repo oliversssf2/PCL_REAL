@@ -40,3 +40,29 @@ pcl::visualization::PCLVisualizer::Ptr twoViewports(
     return (viewer);
 }
 
+pcl::visualization::PCLVisualizer::Ptr twoViewportsBW(
+        pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud,
+        pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud2)
+{
+    pcl::visualization::PCLVisualizer::Ptr viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+    viewer->initCameraParameters();
+
+    int v1(0);
+    viewer->createViewPort(0.0, 0.0, 0.5, 1.0, v1);
+    viewer->setBackgroundColor(0,0,0,v1);
+    viewer->addText("Radius: 0.01", 10, 10, "v1 text", v1);
+    viewer->addPointCloud<pcl::PointXYZ>(cloud, "sample cloud", v1);
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+
+    int v2(1);
+    viewer->createViewPort(0.5, 0.0, 1.0, 1.0, v2);
+    viewer->setBackgroundColor(0,0,0,v1);
+    viewer->addText("Radius: 0.01", 10, 10, "v2 text", v2);
+    viewer->addPointCloud<pcl::PointXYZ>(cloud2, "sample cloud2", v2);
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud2");
+
+    viewer->addCoordinateSystem (1.0);
+    viewer->initCameraParameters();
+    return (viewer);
+}
+

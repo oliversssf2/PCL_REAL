@@ -11,7 +11,7 @@ int main() {
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGB>);
 
-    pcl::io::loadPCDFile<pcl::PointXYZRGB>("../prefabs/new_table_scene_lms400_downsampled.pcd", *cloud);
+    pcl::io::loadPCDFile<pcl::PointXYZRGB>("../prefabs/table_scene_lms400.pcd", *cloud);
 
     std::cerr << "PointCloude before filtering: " << cloud->width * cloud->height
               << " data points (" << pcl::getFieldsList(*cloud) << ")>";
@@ -26,5 +26,11 @@ int main() {
 
 
     auto viewer = twoViewports(cloud, cloud_filtered);
+
+    while(!viewer->wasStopped())
+    {
+        viewer->spinOnce(100);
+        boost::this_thread::sleep (boost::posix_time::microseconds(100000));
+    }
 }
 

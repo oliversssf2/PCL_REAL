@@ -13,4 +13,4 @@ set(deps)
 add_subdirectory(visualizer "${CMAKE_CURRENT_BINARY_DIR}/visualizer")
 add_subdirectory(src "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
-message("${incs} , ${dep_dirs} , ${deps}")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/prefabs" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

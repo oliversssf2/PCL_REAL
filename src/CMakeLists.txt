@@ -6,4 +6,5 @@ target_link_directories(Main PUBLIC ${PCL_LIBRARY_DIRS} ${dep_dirs})
 add_compile_options(${PCL_DEFINITIONS})
 
 target_link_libraries(Main ${PCL_LIBRARIES} ${deps})
+message("THERE ARE ${deps}")
 

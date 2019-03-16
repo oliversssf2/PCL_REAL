@@ -9,6 +9,13 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_representation.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/registration/icp_nl.h>
+#include <pcl/registration/icp.h>
+#include <pcl/registration/transforms.h>
+
 #include "../visualizer/visualizer.h"
 #include "../realsense/cam_util.h"
 
@@ -24,11 +31,15 @@ int main() {
 
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clouds;
 
-//    auto frames = pipe.wait_for_frames();
-//    auto depth = frames.get_depth_frame();
-//    points = pc.calculate(depth);
-//    auto tem = points_to_pcl(points);
-//    clouds.push_back(tem);
+    struct PCD{
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+        std::string f_name;
+        PCD() :cloud (new pcl::PointCloud<pcl::PointXYZ>){};
+    };
+
+    std::vector<PCD> Clouds;
+
+//******************************read pointcloud from camera******************************//
     char t;
     while (true)
     {
@@ -39,10 +50,20 @@ int main() {
            auto frames = pipe.wait_for_frames();
            auto depth = frames.get_depth_frame();
            points = pc.calculate(depth);
-           clouds.push_back(points_to_pcl(points));
+           std::string str = "cloud_" + std::to_string(Clouds.size()) + ".pcd";
+           PCD m;
+           m.f_name = str;
+           m.cloud = points_to_pcl(points);
+           std::vector<int> indices;
+           pcl::removeNaNFromPointCloud(*m.cloud, *m.cloud, indices);
+           Clouds.push_back(m);
        } else if(t == 'q')
            break;
     }
+//******************************************************************************************//
+
+
+
 
     auto viewer = twoViewportsBW(clouds[0], clouds[1]);
 

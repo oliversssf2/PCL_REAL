@@ -90,7 +90,7 @@ void showCloudsLeft(pcl::visualization::PCLVisualizer::Ptr viewer, const pcl::Po
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> src_h (cloud_source, 255,0 , 0);
 
     viewer->addPointCloud(cloud_target, tgt_h, "vp1_target", v1);
-    viewer->addPointCloud(cloud_source, tgt_h, "vp1_source", v1);
+    viewer->addPointCloud(cloud_source, src_h, "vp1_source", v1);
 
     viewer->spin();
 }
@@ -105,7 +105,7 @@ void showCloudsRight(pcl::visualization::PCLVisualizer::Ptr viewer, const pcl::P
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> src_h (cloud_source, 255,0 , 0);
 
     viewer->addPointCloud(cloud_target, tgt_h, "target", v2);
-    viewer->addPointCloud(cloud_source, tgt_h, "source", v2);
+    viewer->addPointCloud(cloud_source, src_h, "source", v2);
 
     viewer->spinOnce();
 }

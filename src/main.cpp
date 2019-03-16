@@ -29,80 +29,80 @@ int main() {
 
     rs2::pipeline_profile p = pipe.start();
 
-    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clouds;
-
-    struct PCD{
+    struct PCD {
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
         std::string f_name;
-        PCD() :cloud (new pcl::PointCloud<pcl::PointXYZ>){};
+
+        PCD() : cloud(new pcl::PointCloud<pcl::PointXYZ>) {};
     };
 
     std::vector<PCD> Clouds;
 
+
 //******************************read pointcloud from camera******************************//
     char t;
-    while (true)
-    {
-       std::cout << "press /'h/' to capture or press '/q'/ to quit" << std::endl;
-       while(!scanf("%c", &t)){}
-       if(t == 'h')
-       {
-           auto frames = pipe.wait_for_frames();
-           auto depth = frames.get_depth_frame();
-           points = pc.calculate(depth);
-           std::string str = "cloud_" + std::to_string(Clouds.size()) + ".pcd";
-           PCD m;
-           m.f_name = str;
-           m.cloud = points_to_pcl(points);
-           std::vector<int> indices;
-           pcl::removeNaNFromPointCloud(*m.cloud, *m.cloud, indices);
-           Clouds.push_back(m);
-       } else if(t == 'q')
-           break;
+    while (true) {
+        std::cout << "press /'h/' to capture or press '/q'/ to quit" << std::endl;
+        while (!scanf("%c", &t)) {}
+        if (t == 'h') {
+            auto frames = pipe.wait_for_frames();
+            auto depth = frames.get_depth_frame();
+            points = pc.calculate(depth);
+            std::string str = "cloud_" + std::to_string(Clouds.size()) + ".pcd";
+            PCD m;
+            m.f_name = str;
+            m.cloud = points_to_pcl(points);
+            std::vector<int> indices;
+            pcl::removeNaNFromPointCloud(*m.cloud, *m.cloud, indices);
+            Clouds.push_back(m);
+        } else if (t == 'q')
+            break;
     }
+
+    int v1, v2;
+    auto viewer = twoViewportsBlank(v1, v2);
+
 //******************************************************************************************//
+    for (size_t i = 1; i < Clouds.size(); i++) {
+        auto target = Clouds[i].cloud;
+        auto source = Clouds[i - 1].cloud;
 
+        showCloudsLeft(viewer, target, source, v1);
 
+        pcl::PointCloud<pcl::PointXYZ>::Ptr result(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr output(new pcl::PointCloud<pcl::PointXYZ>);
 
+        pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
 
-    auto viewer = twoViewportsBW(clouds[0], clouds[1]);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr source_t(new pcl::PointCloud<pcl::PointXYZ>);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr target_t(new pcl::PointCloud<pcl::PointXYZ>);
 
-    while(!viewer->wasStopped())
-    {
-        viewer->spinOnce(100);
-        boost::this_thread::sleep (boost::posix_time::microseconds(100000));
+        pcl::copyPointCloud(*source, *source_t);
+        pcl::copyPointCloud(*target, *target_t);
+
+        icp.setInputCloud(source_t);
+        icp.setInputCloud(target_t);
+
+        icp.setMaxCorrespondenceDistance(0.1);
+        icp.setTransformationEpsilon(1e-8);
+        icp.setEuclideanFitnessEpsilon(1);
+        icp.setMaximumIterations(5);
+
+        Eigen::Matrix4f transformation = Eigen::Matrix4f::Identity(), targetToSource;
+        for (size_t j = 1; j < 20; j++) {
+            icp.align(*result);
+            transformation = icp.getFinalTransformation() * transformation;
+            showCloudsRight(viewer, target_t, source_t, v2);
+        }
+        targetToSource = transformation.inverse();
+        pcl::transformPointCloud(*target, *output, targetToSource);
+        *output += *source;
+        viewer.spin();
     }
 
-
-////********************i am a line*********************************////
-//    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-//    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
-//
-//    pcl::io::loadPCDFile<pcl::PointXYZ>("../prefabs/table_scene_lms400.pcd", *cloud);
-//
-//    std::cerr << "PointCloud before filtering: " << cloud->width * cloud->height
-//              << " data points (" << pcl::getFieldsList(*cloud) << ")>";
-//
-//    pcl::VoxelGrid<pcl::PointXYZ> sor;
-//    sor.setInputCloud(cloud);
-//    sor.setLeafSize(0.01f, 0.01f, 0.01f);
-//    sor.filter(*cloud_filtered);
-//
-//    std::cerr << "PointCloud after filtering: " << cloud_filtered->width * cloud_filtered->height
-//              << " data points (" << pcl::getFieldsList(*cloud_filtered) << ").";
-//
-//
-//    auto viewer = twoViewportsBW(cloud, cloud_filtered);
-//
-//    pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
-////    ne.setRadiusSearch()
-//
-//
-//    while(!viewer->wasStopped())
-//    {
-//        viewer->spinOnce(100);
-//        boost::this_thread::sleep (boost::posix_time::microseconds(100000));
-//    }
-////************************************i am another line*******************************************////
+    while (!viewer->wasStopped()) {
+        viewer->spinOnce(100);
+        boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+    }
 }
 

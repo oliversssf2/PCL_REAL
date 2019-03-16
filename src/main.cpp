@@ -2,24 +2,16 @@
 // Created by fongsu on 3/2/19.
 //
 #include <iostream>
-#include <cstdio>
 
 #include <pcl/point_types.h>
 #include <boost/thread/thread.hpp>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_representation.h>
-#include <pcl/filters/voxel_grid.h>
 #include <pcl/registration/icp_nl.h>
-#include <pcl/registration/icp.h>
-#include <pcl/registration/transforms.h>
 
 #include "../visualizer/visualizer.h"
 #include "../realsense/cam_util.h"
-
-#include <librealsense2/rs.hpp>
 
 int main() {
     rs2::pipeline pipe;
@@ -97,7 +89,7 @@ int main() {
         targetToSource = transformation.inverse();
         pcl::transformPointCloud(*target, *output, targetToSource);
         *output += *source;
-        viewer.spin();
+        viewer->spin();
     }
 
     while (!viewer->wasStopped()) {

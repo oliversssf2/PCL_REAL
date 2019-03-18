@@ -26,6 +26,7 @@ pcl::visualization::PCLVisualizer::Ptr twoViewportsBW(  //render two PointXYZ Po
 pcl::visualization::PCLVisualizer::Ptr twoViewportsBlank(int & v1, int & v2);
 void showCloudsRight(pcl::visualization::PCLVisualizer::Ptr viewer, const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_target, const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_source, int & v2);
 void showCloudsLeft(pcl::visualization::PCLVisualizer::Ptr viewer, const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_target, const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_source, int & v1);
+void showCloudLeftNormal(pcl::visualization::PCLVisualizer::Ptr viewer, const pcl::PointCloud<pcl::PointNormal>::Ptr cloud_target, const pcl::PointCloud<pcl::PointNormal>::Ptr cloud_source, int & v);
 
 
 #endif //PCL_REAL_VISUALIZER_H

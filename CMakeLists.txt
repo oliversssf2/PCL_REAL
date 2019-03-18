@@ -13,7 +13,7 @@ if(NOT REALSENSE2_FOUND)
     message(ERROR "Failed to find_library(realsense2)")
 endif()
 
-set(incs)
+set(incs "${CMAKE_CURRENT_BINARY_DIR}/cmake")
 set(dep_dirs)
 set(deps ${REALSENSE2_FOUND})
 
@@ -21,5 +21,9 @@ add_subdirectory(realsense "${CMAKE_CURRENT_BINARY_DIR}/realsense")
 add_subdirectory(visualizer "${CMAKE_CURRENT_BINARY_DIR}/visualizer")
 add_subdirectory(src "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
-#copy(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/prefabs" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+set(CSVOUTPUTPREFIX "${CMAKE_CURRENT_BINARY_DIR}/output/csv/")
+set(PCDOUTPUTPREFIX "${CMAKE_CURRENT_BINARY_DIR}/output/pcd/")
+file(MAKE_DIRECTORY ${CSVOUTPUTPREFIX} ${PCDOUTPUTPREFIX})
+add_subdirectory(cmake)
+
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/prefabs" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

@@ -107,6 +107,26 @@ void showCloudsRight(pcl::visualization::PCLVisualizer::Ptr viewer, const pcl::P
     viewer->addPointCloud(cloud_target, tgt_h, "target", v2);
     viewer->addPointCloud(cloud_source, src_h, "source", v2);
 
-    viewer->spinOnce();
+    viewer->spin();
 }
 
+void showCloudLeftNormal(pcl::visualization::PCLVisualizer::Ptr viewer, const pcl::PointCloud<pcl::PointNormal>::Ptr cloud_target, const pcl::PointCloud<pcl::PointNormal>::Ptr cloud_source, int & v)
+{
+    viewer->removePointCloud ("source");
+    viewer->removePointCloud ("target");
+
+    pcl::PointCloud<pcl::Normal>::Ptr normal1 (new pcl::PointCloud<pcl::Normal>);
+    pcl::PointCloud<pcl::Normal>::Ptr normal2 (new pcl::PointCloud<pcl::Normal>);
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr point1 (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr point2 (new pcl::PointCloud<pcl::PointXYZ>);
+
+    //pcl::copyPointCloud(cloud_target, normal1);
+
+
+
+    viewer->addPointCloud<pcl::PointNormal>(cloud_target, "target", v);
+    viewer->addPointCloud<pcl::PointNormal>(cloud_source, "source", v);
+
+    viewer->spin();
+}

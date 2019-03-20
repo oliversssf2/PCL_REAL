@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 #include <librealsense2/rs.hpp>
 #include "../realsense/cam_util.h"
@@ -85,6 +86,17 @@ int main()
             pcl::removeNaNNormalsFromPointCloud(*i_5, *m.cloud, indices2);
 
             m.f_name = "cloud_" + std::to_string(index);
+
+            std::vector<size_t> idx(m.cloud->width);
+            std::iota(idx.begin(), idx.end(), 0);
+            std::sort(idx.begin(), idx.end(), [&m](size_t i, size_t i2){ return (m.cloud->points.at(i).x < m.cloud->points.at(i2).x);});
+            for(auto v : idx)
+                std::cout << m.cloud->points.at(v) << std::endl;
+            for(size_t j = 0; j < idx.size(); j++)
+            {
+                ;
+            }
+
             Clouds.push_back(m);
             savePointNormal(m, false, true);
             ++index;

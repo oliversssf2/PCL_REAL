@@ -92,13 +92,21 @@ int main()
             std::sort(idx.begin(), idx.end(), [&m](size_t i, size_t i2){ return (m.cloud->points.at(i).x < m.cloud->points.at(i2).x);});
             for(auto v : idx)
                 std::cout << m.cloud->points.at(v) << std::endl;
-            for(size_t j = 0; j < idx.size(); j++)
+            auto it_tgt = idx.begin();
+            for(auto it_flag = idx.begin(); it_flag != idx.end(); it_flag++)
             {
-                ;
+                if((m.cloud->points.at(*it_flag).x - m.cloud->points.at(*it_tgt).x) > 0.03)
+                {
+                    std::sort(it_tgt, it_flag, [&m](size_t i, size_t i2){ return (m.cloud->points.at(i).y < m.cloud->points.at(i2).y);});
+                    it_tgt = it_flag;
+                }
             }
+            for(auto v : idx)
+                std::cout << m.cloud->points.at(v) << std::endl;
+
 
             Clouds.push_back(m);
-            savePointNormal(m, false, true);
+            savePointNormal(m, false, true, idx);
             ++index;
         } else if (t == 'q')
             break;

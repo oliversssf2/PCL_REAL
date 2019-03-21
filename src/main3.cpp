@@ -45,7 +45,7 @@ int main()
             PCDPointNormal m;
             m.f_name = str;
 
-            pcl::PointCloud<pcl::PointXYZ>::Ptr i = points_to_pcl(points);
+            pcl::PointCloud<pcl::PointXYZ>::Ptr i = points_to_pcl(points, 225);
             pcl::PointCloud<pcl::PointXYZ>::Ptr i_2 (new pcl::PointCloud<pcl::PointXYZ>);
 
             pcl::PassThrough<pcl::PointXYZ> pass;

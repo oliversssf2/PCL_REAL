@@ -13,6 +13,7 @@ if(NOT REALSENSE2_FOUND)
     message(ERROR "Failed to find_library(realsense2)")
 endif()
 
+#lists to stall path and libraries
 set(incs "${CMAKE_CURRENT_BINARY_DIR}/cmake")
 set(dep_dirs)
 set(deps ${REALSENSE2_FOUND})
@@ -20,6 +21,7 @@ set(deps ${REALSENSE2_FOUND})
 add_subdirectory(realsense "${CMAKE_CURRENT_BINARY_DIR}/realsense")
 add_subdirectory(visualizer "${CMAKE_CURRENT_BINARY_DIR}/visualizer")
 add_subdirectory(src "${CMAKE_CURRENT_BINARY_DIR}/bin")
+add_subdirectory(pathGenerator "${CMAKE_CURRENT_BINARY_DIR}/pathGenerator")
 
 set(CSVOUTPUTPREFIX "${CMAKE_CURRENT_BINARY_DIR}/output/csv/")
 set(PCDOUTPUTPREFIX "${CMAKE_CURRENT_BINARY_DIR}/output/pcd/")

@@ -30,35 +30,11 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr points_to_pcl(const rs2::points& points, int
 
     return cloud;
 }
-
-void savePointNormal(PCDPointNormal cloud, bool pcd, bool csv)
+pcl::PointCloud<pcl::PointXYZ>::Ptr points_to_pcl(const rs2::points& points)
 {
-    if(pcd)
-    {
-        std::string name = PCDOUTPUTPREFIX + cloud.f_name + ".pcd";
-        pcl::io::savePCDFileASCII(name, *cloud.cloud);
-    }
-    if(csv)
-    {
-        std::string name = CSVOUTPUTPREFIX + cloud.f_name + ".csv";
-        std::cout << name << std::endl;
-        std::ofstream myfile;
-        myfile.open(name, std::ios::out);
-        if(!myfile)
-        {
-            std::cerr << "cant";
-            exit(1);
-        }
-
-        for(auto points : cloud.cloud->points)
-        {
-            //std::cout << "hi" << std::endl;
-            myfile << points.x * 1000<< ',' << points.y * 1000<< ',' << points.z * 1000 << ","
-                   << points.normal_x*(-1) << ',' << points.normal_y*(-1) << ',' << points.normal_z*(-1) << std::endl;
-        }
-        myfile.close();
-    }
+    return points_to_pcl(points, 1);
 }
+
 
 void savePointNormal(PCDPointNormal cloud, bool pcd, bool csv, const std::vector<size_t> &idx)
 {
@@ -88,13 +64,14 @@ void savePointNormal(PCDPointNormal cloud, bool pcd, bool csv, const std::vector
                     << cloud.cloud->points.at(x).normal_y * (-1) << ','
                     << cloud.cloud->points.at(x).normal_z * (-1) << std::endl;
         }
-//        for(auto points : cloud.cloud->points)
-//        {
-//            //std::cout << "hi" << std::endl;
-//            myfile << points.x * 1000<< ',' << points.y * 1000<< ',' << points.z * 1000 << ","
-//                   << points.normal_x*(-1) << ',' << points.normal_y*(-1) << ',' << points.normal_z*(-1) << std::endl;
-//        }
         myfile.close();
     }
+}
+
+void savePointNormal(PCDPointNormal cloud, bool pcd, bool csv)
+{
+    std::vector<size_t> idx(cloud.cloud->size());
+    std::iota(idx.begin(), idx.end(), 0);
+    savePointNormal(cloud, pcd, csv, idx);
 }
 

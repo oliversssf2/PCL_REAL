@@ -18,7 +18,8 @@ struct PCDPointNormal {
 };
 
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr points_to_pcl(const rs2::points& points, int k=225);
+pcl::PointCloud<pcl::PointXYZ>::Ptr points_to_pcl(const rs2::points& points, int k);
+pcl::PointCloud<pcl::PointXYZ>::Ptr points_to_pcl(const rs2::points& points);
 void savePointNormal(PCDPointNormal cloud, bool pcd, bool csv, const std::vector<size_t> &idx);
 void savePointNormal(PCDPointNormal cloud, bool pcd, bool csv);
 

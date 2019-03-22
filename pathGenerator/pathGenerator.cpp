@@ -13,6 +13,7 @@ void pathGenerator::PassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::
     pcl::PassThrough<pcl::PointXYZ> pass;
     pass.setInputCloud(input);
     pass.setFilterFieldName(passfield);
+    pass.setFilterLimits(limitMin, limitMax);
     pass.filter(*output);
 }
 
@@ -92,9 +93,9 @@ void pathGenerator::Gen_compute() {
 
     PassThrough(stage_1, stage_2);
     StatisticalOutlierRemoval(stage_2, stage_3);
-    NormalEstimation(stage_3, stage_4);
-    NaNRemoval(stage_4, stage_5);
-    Reorganize(stage_5);
+    NormalEstimation(stage_3, stage_4, original);
+    NaNRemoval(stage_4, m.cloud);
+    Reorganize(m.cloud);
 
     data.processed_Clouds.push_back(m);
     savePointNormal(m, false, true, data.indices_order.back());

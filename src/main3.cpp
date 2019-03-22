@@ -31,6 +31,8 @@ int main()
 
     char t;
     int index = 0;
+    pathGenerator gen;
+
     while (true) {
         std::cout << "press /'h/' to capture or press '/q'/ to quit" << std::endl;
         while (!scanf("%c", &t)) {}
@@ -111,7 +113,6 @@ int main()
 //            Clouds.push_back(m);
 //            savePointNormal(m, false, true, idx);
 //            ++index;
-            pathGenerator gen;
             gen.Gen_compute();
 
 

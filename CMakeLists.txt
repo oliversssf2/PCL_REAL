@@ -20,8 +20,8 @@ set(deps ${REALSENSE2_FOUND})
 
 add_subdirectory(realsense "${CMAKE_CURRENT_BINARY_DIR}/realsense")
 add_subdirectory(visualizer "${CMAKE_CURRENT_BINARY_DIR}/visualizer")
-add_subdirectory(src "${CMAKE_CURRENT_BINARY_DIR}/bin")
 add_subdirectory(pathGenerator "${CMAKE_CURRENT_BINARY_DIR}/pathGenerator")
+add_subdirectory(src "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
 set(CSVOUTPUTPREFIX "${CMAKE_CURRENT_BINARY_DIR}/output/csv/")
 set(PCDOUTPUTPREFIX "${CMAKE_CURRENT_BINARY_DIR}/output/pcd/")

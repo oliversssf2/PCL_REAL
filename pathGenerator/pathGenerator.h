@@ -38,7 +38,7 @@ protected:
     void NaNRemoval(pcl::PointCloud<pcl::PointNormal>::Ptr input, pcl::PointCloud<pcl::PointNormal>::Ptr output);
     void Reorganize(pcl::PointCloud<pcl::PointNormal>::Ptr input);
 
-    void setPassLimit(float up, float low){ passUpLim = up; passLowLim = low;};
+    void setPassLimit(float up, float low){ limitMax = up; limitMin = low;};
 
 private:
     rs2::pipeline pipe;
@@ -52,8 +52,8 @@ private:
     int downsample = 225;
 
     //**passthrough properties
-    float passUpLim = 0.4;
-    float passLowLim = 0.2;
+    float limitMax = 0.4;
+    float limitMin = 0.2;
     std::string passfield = "z";
 
     //**StatisticalOutlierRemoval properties

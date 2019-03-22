@@ -36,16 +36,19 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr points_to_pcl(const rs2::points& points)
 }
 
 
-void savePointNormal(PCDPointNormal cloud, bool pcd, bool csv, const std::vector<size_t> &idx)
+std::pair<std::string, std::string> savePointNormal(PCDPointNormal cloud, bool pcd, bool csv, const std::vector<size_t> &idx)
 {
+    std::string csv_path, pcd_path;
     if(pcd)
     {
         std::string name = PCDOUTPUTPREFIX + cloud.f_name + ".pcd";
         pcl::io::savePCDFileASCII(name, *cloud.cloud);
+        pcd_path = name;
     }
     if(csv)
     {
         std::string name = CSVOUTPUTPREFIX + cloud.f_name + ".csv";
+        csv_path = name;
         std::cout << name << std::endl;
         std::ofstream myfile;
         myfile.open(name, std::ios::out);
@@ -66,12 +69,13 @@ void savePointNormal(PCDPointNormal cloud, bool pcd, bool csv, const std::vector
         }
         myfile.close();
     }
+    return std::make_pair(csv_path, pcd_path);
 }
 
-void savePointNormal(PCDPointNormal cloud, bool pcd, bool csv)
+std::pair<std::string, std::string> savePointNormal(PCDPointNormal cloud, bool pcd, bool csv)
 {
     std::vector<size_t> idx(cloud.cloud->size());
     std::iota(idx.begin(), idx.end(), 0);
-    savePointNormal(cloud, pcd, csv, idx);
+    return savePointNormal(cloud, pcd, csv, idx);
 }
 

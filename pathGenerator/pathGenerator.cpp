@@ -70,6 +70,64 @@ void pathGenerator::Reorganize(pcl::PointCloud<pcl::PointNormal>::Ptr input) {
     data.indices_order.push_back(idx);
 }
 
+void pathGenerator::updateSettings(){
+    std::cout << "use defalut settings?" << std::endl;
+
+    std::cout << "downsample: " << 225 << std::endl;
+    std::cout << "passthrough Max Limit: " << limitMax << std::endl;
+    std::cout << "passthrough Min Limit: " << limitMin << std::endl;
+    std::cout << "passthrough field: " << passfield << std::endl;
+    std::cout << "MeanK: " << MeanK << std::endl;
+    std::cout << "StddevMulThresh: " << StddevMulThresh << std::endl;
+    std::cout << "NormalSearchRadius: " << searchRadius << std::endl;
+    std::cout << "ReorganizeRange: " << reorganizeRange << std::endl;
+
+    std::cout << "\nChange Settings? 'y' for yes 'n' for no" << std::endl;
+    char c;
+    scanf("%c", &c);
+    if(c == 'y')
+    {
+        std::cout << "setPassLimit(float _limitMax, float _limitMin, std::string _passfield): ";
+        float i, j;
+        std::string k;
+        std::cin >> i >> j >> k;
+        setPassLimit(i, j, k);
+        std::cin.ignore();
+        std::cout << std::endl;
+
+        std::cout << "setDownsample(int _downsample): ";
+        int l;
+        std::cin >> l;
+        setDownsample(l);
+        std::cin.ignore();
+        std::cout << std::endl;
+
+        std::cout << "setStatOutRem(int _MeanK, float _StddevMulThresh): ";
+        int m;
+        float n;
+        std::cin >> m >> n;
+        setStatOutRem(m, n);
+        std::cin.ignore();
+        std::cout << std::endl;
+
+        std::cout << "setNormalEst(float _searchRadius): ";
+        float o;
+        std::cin >> o;
+        setNormalEst(o);
+        std::cin.ignore();
+        std::cout << std::endl;
+
+        std::cout << "setReorganizeRange(float _reorganizeRange): ";
+        float p;
+        std::cin >> p;
+        setNormalEst(p);
+        std::cin.ignore();
+        std::cout << std::endl;
+    } else
+        std::cout << "using default settings now" << std::endl;
+
+}
+
 
 void pathGenerator::Gen_compute() {
     auto frames = pipe.wait_for_frames();

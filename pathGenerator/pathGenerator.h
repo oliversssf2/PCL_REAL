@@ -28,7 +28,7 @@ class pathGenerator {
 public:
     pathGenerator();
     void Gen_compute();
-
+    void updateSettings();
 
 protected:
     void PassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output);
@@ -38,7 +38,10 @@ protected:
     void NaNRemoval(pcl::PointCloud<pcl::PointNormal>::Ptr input, pcl::PointCloud<pcl::PointNormal>::Ptr output);
     void Reorganize(pcl::PointCloud<pcl::PointNormal>::Ptr input);
 
-    void setPassLimit(float up, float low){ limitMax = up; limitMin = low;};
+    inline void setPassLimit(float _limitMax, float _limitMin, std::string _passfield){ limitMax = _limitMax; limitMin = _limitMin; passfield = _passfield;}
+    inline void setDownsample(int _downsample){downsample = _downsample;}
+    inline void setStatOutRem(int _MeanK, float _StddevMulThresh){MeanK = _MeanK; StddevMulThresh = _StddevMulThresh;}
+    inline void setNormalEst(float _searchRadius){searchRadius = _searchRadius;}
 
 private:
     rs2::pipeline pipe;
@@ -52,13 +55,13 @@ private:
     int downsample = 225;
 
     //**passthrough properties
-    float limitMax = 0.4;
-    float limitMin = 0.2;
+    float limitMax = 0.4f;
+    float limitMin = 0.2f;
     std::string passfield = "z";
 
     //**StatisticalOutlierRemoval properties
     int MeanK = 50;
-    float StddevMulThresh = 1.0;
+    float StddevMulThresh = 3.0;
 
     //**NormalEstimation properties
     float searchRadius = 0.03;

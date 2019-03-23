@@ -32,6 +32,7 @@ int main()
     char t;
     int index = 0;
     pathGenerator gen;
+    gen.updateSettings();
 
     while (true) {
         std::cout << "press /'h/' to capture or press '/q'/ to quit" << std::endl;

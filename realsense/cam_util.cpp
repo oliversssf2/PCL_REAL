@@ -2,8 +2,6 @@
 // Created by fongsu on 3/10/19.
 //
 #include "cam_util.h"
-#include <iostream>
-#include <vector>
 #include <fstream>
 #include <cmakeconfig.h>
 #include <pcl/io/pcd_io.h>
@@ -14,19 +12,36 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr points_to_pcl(const rs2::points& points, int
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
     auto sp = points.get_profile().as<rs2::video_stream_profile>();
+//    cloud->width = sp.width()/sqrt(k);
+//    cloud->height = sp.height()/sqrt(k);
     cloud->width = sp.width()/sqrt(k);
     cloud->height = sp.height()/sqrt(k);
     cloud->is_dense = false;
     cloud->points.resize(points.size()/(k));
     auto ptr = points.get_vertices();
 
-    for (auto& p : cloud->points)
-    {
-        p.x = ptr->x;
-        p.y = ptr->y;
-        p.z = ptr->z;
-        ptr += k;
+    int width = cloud->width;
+    int height = cloud->height;
+    auto it = cloud->points.begin();
+
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            it->x = ptr->x;
+            it->y = ptr->y;
+            it->z = ptr->z;
+            it++;
+            ptr += int(sqrt(k));
+        }
+        ptr += int(sqrt(k) * sp.width());
     }
+
+//    for (auto& p : cloud->points)
+//    {
+//        p.x = ptr->x;
+//        p.y = ptr->y;
+//        p.z = ptr->z;
+//        ptr += k;
+//    }
 
     return cloud;
 }

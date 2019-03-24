@@ -52,7 +52,7 @@ private:
     PC_Data data;
 
     //*downsample
-    int downsample = 225;
+    int downsample = 400;
 
     //**passthrough properties
     float limitMax = 0.4f;
@@ -60,16 +60,15 @@ private:
     std::string passfield = "z";
 
     //**StatisticalOutlierRemoval properties
-    int MeanK = 50;
-    float StddevMulThresh = 3.0;
+    int MeanK = 30;
+    float StddevMulThresh = 1.0;
 
     //**NormalEstimation properties
     float searchRadius = 0.03;
 
-    //**reorganize properties
-    float reorganizeRange = 0.01;
+    //**reorganize propertiesh
 
-
+    float reorganizeRange = 0.008;
 };
 
 

@@ -15,6 +15,9 @@ void pathGenerator::PassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::
     pass.setFilterFieldName(passfield);
     pass.setFilterLimits(limitMin, limitMax);
     pass.filter(*output);
+    std::cout << "============================passthrough=========================" << std::endl;
+    for (auto x : output->points)
+        std::cout << x << std::endl;
 }
 
 void pathGenerator::StatisticalOutlierRemoval(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output) {
@@ -23,6 +26,9 @@ void pathGenerator::StatisticalOutlierRemoval(pcl::PointCloud<pcl::PointXYZ>::Pt
     stat_sort.setMeanK(MeanK);
     stat_sort.setStddevMulThresh(StddevMulThresh);
     stat_sort.filter(*output);
+    std::cout << "============================stat=========================" << std::endl;
+    for (auto x : output->points)
+        std::cout << x << std::endl;
 }
 
 void pathGenerator::NormalEstimation(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointNormal>::Ptr output, pcl::PointCloud<pcl::PointXYZ>::Ptr searchSurface) {
@@ -35,6 +41,11 @@ void pathGenerator::NormalEstimation(pcl::PointCloud<pcl::PointXYZ>::Ptr input, 
     ne.compute(*output);
 
     pcl::copyPointCloud(*input, *output);
+
+    std::cout << "============================norm=========================" << std::endl;
+    for (auto x : output->points)
+        std::cout << x << std::endl;
+
 }
 
 void pathGenerator::NormalEstimation(pcl::PointCloud<pcl::PointXYZ>::Ptr input,pcl::PointCloud<pcl::PointNormal>::Ptr output) {
@@ -48,6 +59,10 @@ void pathGenerator::NaNRemoval(pcl::PointCloud<pcl::PointNormal>::Ptr input,pcl:
     pcl::PointCloud<pcl::PointNormal>::Ptr tem (new pcl::PointCloud<pcl::PointNormal>);
     pcl::removeNaNFromPointCloud(*input, *tem, indices_p);
     pcl::removeNaNNormalsFromPointCloud(*tem, *output, indices_n);
+    std::cout << "============================nan=========================" << std::endl;
+    for (auto x : output->points)
+        std::cout << x << std::endl;
+
 }
 
 void pathGenerator::Reorganize(pcl::PointCloud<pcl::PointNormal>::Ptr input) {
@@ -73,7 +88,7 @@ void pathGenerator::Reorganize(pcl::PointCloud<pcl::PointNormal>::Ptr input) {
 void pathGenerator::updateSettings(){
     std::cout << "use defalut settings?" << std::endl;
 
-    std::cout << "downsample: " << 225 << std::endl;
+    std::cout << "downsample: " << downsample << std::endl;
     std::cout << "passthrough Max Limit: " << limitMax << std::endl;
     std::cout << "passthrough Min Limit: " << limitMin << std::endl;
     std::cout << "passthrough field: " << passfield << std::endl;

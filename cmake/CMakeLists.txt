@@ -1,0 +1,1 @@
+configure_file(cmakeconfig.h.in cmakeconfig.h @ONLY)

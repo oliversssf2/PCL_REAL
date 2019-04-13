@@ -30,6 +30,8 @@ public:
     void Gen_compute();
     void updateSettings();
 
+	rs2::frameset wait_for_frames();
+
 protected:
     void PassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output);
     void StatisticalOutlierRemoval(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output);
@@ -55,8 +57,8 @@ private:
     int downsample = 400;
 
     //**passthrough properties
-    float limitMax = 0.4f;
-    float limitMin = 0.2f;
+    float limitMax = 0.35f;
+	float limitMin = 0.15f;
     std::string passfield = "z";
 
     //**StatisticalOutlierRemoval properties

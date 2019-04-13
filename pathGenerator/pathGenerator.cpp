@@ -6,7 +6,10 @@
 #include "pathGenerator.h"
 
 pathGenerator::pathGenerator() {
-    pipe_profile = pipe.start();
+	rs2::config cfg;
+	cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
+	cfg.enable_stream(RS2_STREAM_COLOR, 640, 480);
+	pipe_profile = pipe.start(cfg);
 }
 
 void pathGenerator::PassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output) {
@@ -155,7 +158,7 @@ void pathGenerator::Gen_compute() {
     m.f_name = str;
     m.index = data.count-1;
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr original = points_to_pcl(points);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr original = points_to_pcl(points, downsample);
     data.original_Clouds.push_back(original);
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr stage_1 = points_to_pcl(points, downsample);
@@ -172,5 +175,10 @@ void pathGenerator::Gen_compute() {
 
     data.processed_Clouds.push_back(m);
     savePointNormal(m, false, true, data.indices_order.back());
+}
+
+rs2::frameset pathGenerator::wait_for_frames() {
+	const rs2::frameset frames = pipe.wait_for_frames();
+	return frames;
 }
 

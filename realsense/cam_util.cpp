@@ -24,7 +24,8 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr points_to_pcl(const rs2::points& points, int
     int height = cloud->height;
     auto it = cloud->points.begin();
 
-    for (int i = 0; i < height; i++) {
+
+	for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             it->x = ptr->x;
             it->y = ptr->y;

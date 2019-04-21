@@ -105,17 +105,20 @@ void readCoords(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, std::string file)
 		std::cerr << "CAN'T READ FILE" << std::endl;
 		return;
 	}
+	size_t cnt = 0;
 	for(auto &pt : cloud->points)
 	{
-		if(myfile)
+		if(myfile >> pt.x >> pt.y)
 		{
-			myfile >> pt.x >> pt.y;
 			pt.z = 0;
 			std::cout << pt.x << '\t' << pt.y << std::endl;
+			cnt++;
 		}
 		else
 			break;
 	}
+	cloud->width = cnt;
+	cloud->resize(cloud->width * cloud->height);
 	myfile.close();
 }
 

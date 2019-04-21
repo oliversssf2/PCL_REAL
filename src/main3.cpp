@@ -6,6 +6,7 @@
 #include <vector>
 #include <thread>
 #include <imgui.h>
+#include <imgui_impl_glfw.h>
 
 #include <librealsense2/rs.hpp>
 #include <example.hpp>
@@ -31,7 +32,7 @@ int main()
 {
 	rs2::log_to_console(RS2_LOG_SEVERITY_ERROR);
 	window app(1280, 720, "Realsense Capture");
-	Imgui_ImplGlfw_Init(app, false);
+	ImGui_ImplGlfw_Init(app, false);
 
 	rs2::colorizer color_map;
 	rs2::rates_printer printer;
@@ -49,7 +50,7 @@ int main()
 		app.show(data);
 
 		//Render the UI
-		Img
+		//Img
     }
 	//if(distanceDisplayThread.joinable())
 	//	distanceDisplayThread.join();

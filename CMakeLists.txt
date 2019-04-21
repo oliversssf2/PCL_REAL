@@ -20,15 +20,16 @@ set(incs "${CMAKE_CURRENT_BINARY_DIR}/cmake")
 set(dep_dirs)
 set(deps ${REALSENSE2_FOUND})
 
-add_subdirectory(imgui ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 add_subdirectory(realsense "${CMAKE_CURRENT_BINARY_DIR}/realsense")
 add_subdirectory(visualizer "${CMAKE_CURRENT_BINARY_DIR}/visualizer")
 add_subdirectory(pathGenerator "${CMAKE_CURRENT_BINARY_DIR}/pathGenerator")
 add_subdirectory(src "${CMAKE_CURRENT_BINARY_DIR}/bin")
+add_subdirectory(find_intersection)
 
 set(CSVOUTPUTPREFIX "${CMAKE_CURRENT_BINARY_DIR}/output/csv/")
 set(PCDOUTPUTPREFIX "${CMAKE_CURRENT_BINARY_DIR}/output/pcd/")
-file(MAKE_DIRECTORY ${CSVOUTPUTPREFIX} ${PCDOUTPUTPREFIX})
+set(DISTOUTPUTPREFIX "${CMAKE_CURRENT_BINARY_DIR}/output/dist/")
+file(MAKE_DIRECTORY ${CSVOUTPUTPREFIX} ${PCDOUTPUTPREFIX} ${DISTOUTPUTPREFIX})
 add_subdirectory(cmake)
 
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/prefabs" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

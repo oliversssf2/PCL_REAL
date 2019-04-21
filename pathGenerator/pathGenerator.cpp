@@ -10,6 +10,14 @@ pathGenerator::pathGenerator() {
 	cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
 	cfg.enable_stream(RS2_STREAM_COLOR, 640, 480);
 	pipe_profile = pipe.start(cfg);
+	std::string t{"dist.csv"};
+	distFileName = DISTOUTPUTPREFIX + t;
+	distfile.open(distFileName, std::ios::out);
+}
+
+pathGenerator::~pathGenerator() {
+	distfile.close();
+	pipe.stop();
 }
 
 void pathGenerator::PassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output) {
@@ -148,7 +156,7 @@ void pathGenerator::updateSettings(){
 
 
 void pathGenerator::Gen_compute() {
-    auto frames = pipe.wait_for_frames();
+    frames = pipe.wait_for_frames();
     auto depth = frames.get_depth_frame();
     points = pc.calculate(depth);
 
@@ -178,7 +186,14 @@ void pathGenerator::Gen_compute() {
 }
 
 rs2::frameset pathGenerator::wait_for_frames() {
-	const rs2::frameset frames = pipe.wait_for_frames();
+	frames = pipe.wait_for_frames();
 	return frames;
+}
+
+float pathGenerator::midDist() {
+	rs2::depth_frame depth = frames.get_depth_frame();
+	float ret = depth.get_distance(depth.get_width() / 2, depth.get_height() / 2);
+	distfile << ret << ',' << std::endl;
+	return ret;
 }
 

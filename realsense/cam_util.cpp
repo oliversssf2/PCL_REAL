@@ -74,6 +74,7 @@ std::pair<std::string, std::string> savePointNormal(PCDPointNormal cloud, bool p
             exit(1);
         }
 
+
         for(auto x : idx)
         {
             myfile << cloud.cloud->points.at(x).x * 1000 << ','
@@ -93,5 +94,28 @@ std::pair<std::string, std::string> savePointNormal(PCDPointNormal cloud, bool p
     std::vector<size_t> idx(cloud.cloud->size());
     std::iota(idx.begin(), idx.end(), 0);
     return savePointNormal(cloud, pcd, csv, idx);
+}
+
+void readCoords(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, std::string file)
+{
+	std::ifstream myfile;
+	myfile.open(file, std::ios::in);
+	if(!myfile.is_open())
+	{
+		std::cerr << "CAN'T READ FILE" << std::endl;
+		return;
+	}
+	for(auto &pt : cloud->points)
+	{
+		if(myfile)
+		{
+			myfile >> pt.x >> pt.y;
+			pt.z = 0;
+			std::cout << pt.x << '\t' << pt.y << std::endl;
+		}
+		else
+			break;
+	}
+	myfile.close();
 }
 

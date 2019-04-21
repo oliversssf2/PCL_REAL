@@ -8,6 +8,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <stdio.h>
+#include <fstream>
 
 #include <pcl/filters/passthrough.h>
 #include <pcl/features/normal_3d.h>
@@ -15,6 +17,9 @@
 
 #include <librealsense2/rs.hpp>
 #include "../realsense/cam_util.h"
+
+#include <cmakeconfig.h>
+
 
 struct PC_Data{ //PointCloud DATA
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> original_Clouds;
@@ -27,10 +32,12 @@ struct PC_Data{ //PointCloud DATA
 class pathGenerator {
 public:
     pathGenerator();
+    ~pathGenerator();
     void Gen_compute();
     void updateSettings();
 
 	rs2::frameset wait_for_frames();
+	float midDist();
 
 protected:
     void PassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output);
@@ -52,6 +59,7 @@ private:
     rs2::pipeline_profile pipe_profile;
 
     PC_Data data;
+    rs2::frameset frames;
 
     //*downsample
     int downsample = 400;
@@ -71,6 +79,9 @@ private:
     //**reorganize propertiesh
 
     float reorganizeRange = 0.008;
+
+    std::string distFileName;
+	std::ofstream distfile;
 };
 
 

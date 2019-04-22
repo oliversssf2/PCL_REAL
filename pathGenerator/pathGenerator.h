@@ -46,6 +46,7 @@ protected:
     void NormalEstimation(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointNormal>::Ptr output);
     void NaNRemoval(pcl::PointCloud<pcl::PointNormal>::Ptr input, pcl::PointCloud<pcl::PointNormal>::Ptr output);
     void Reorganize(pcl::PointCloud<pcl::PointNormal>::Ptr input);
+    void Exaggerate(pcl::PointCloud<pcl::PointNormal>::Ptr input);
 
     inline void setPassLimit(float _limitMax, float _limitMin, std::string _passfield){ limitMax = _limitMax; limitMin = _limitMin; passfield = _passfield;}
     inline void setDownsample(int _downsample){downsample = _downsample;}

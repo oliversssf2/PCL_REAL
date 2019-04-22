@@ -96,6 +96,13 @@ void pathGenerator::Reorganize(pcl::PointCloud<pcl::PointNormal>::Ptr input) {
     data.indices_order.push_back(idx);
 }
 
+void pathGenerator::Exaggerate(pcl::PointCloud<pcl::PointNormal>::Ptr input) {
+	for(auto &p : input->points)
+	{
+
+	}
+}
+
 void pathGenerator::updateSettings(){
     std::cout << "use defalut settings?" << std::endl;
 

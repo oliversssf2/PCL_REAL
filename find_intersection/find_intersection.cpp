@@ -16,6 +16,9 @@
 #include <pcl/sample_consensus/sac_model_sphere.h>
 #include <pcl/sample_consensus/sac_model_line.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/common/intersections.h>
+
+#include <intersection_finder.h>
 
 using namespace std::chrono_literals;
 
@@ -32,135 +35,88 @@ simpleVis (pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud)
 	//viewer->addCoordinateSystem (1.0, "global");
 	viewer->initCameraParameters ();
 	return (viewer);
+
 }
 
 int
 main(int argc, char** argv)
 {
+	std::cout << "PRESS ENTER TO START!!!" << std::endl;
+	while (std::cin.get()) {
+		float threshold;
+		std::string file1, file2;
+		std::cout << "first file: ";
+		std::cin >> file1;
+		std::cout << std::endl;
+		std::cout << "second file: ";
+		std::cin >> file2;
+		std::cout << std::endl;
+		std::cout << "enter threshold" << std::endl;
+		std::cin >> threshold;
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr final(new pcl::PointCloud<pcl::PointXYZ>);
+
+		pcl::ModelCoefficients k;
+		fitline(file1, final, k, threshold);
+
+		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_2(new pcl::PointCloud<pcl::PointXYZ>);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr final_2(new pcl::PointCloud<pcl::PointXYZ>);
+		pcl::ModelCoefficients k_2;
+		fitline(file2, final_2, k_2, threshold);
+
+		Eigen::Vector4f intersect_pt;
+		pcl::PointCloud<pcl::PointXYZ>::Ptr intersect(new pcl::PointCloud<pcl::PointXYZ>);
+		find_intersection(k, k_2, intersect_pt, intersect);
+
+		std::cout << "result: " << std::endl;
+		for (auto &k : intersect->points)
+			cout << "X: " << k.x << " Y:" << k.y << " Z:" << k.z << std::endl;
+		std::cout << intersect_pt << std::endl;
+		std::cout << "Press Enter to continue" << std::endl;
+
+		pcl::visualization::PCLVisualizer::Ptr viewer;
+
+		viewer = simpleVis(final);
+		viewer->addPointCloud(final_2, "cloud_2");
+		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud_2");
+		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 255, 0, 0, "cloud_2");
+
+		viewer->addPointCloud(intersect, "intersect");
+		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 8, "intersect");
+		viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0, 255, 0, "intersect");
+
+		viewer->addCoordinateSystem(1);
+
+		viewer->addLine(k, "line one");
+		viewer->addLine(k_2, "line two");
+		while (!viewer->wasStopped()) {
+			viewer->spinOnce(100);
+			std::this_thread::sleep_for(100ms);
+		}
+	}
 	//******************first cloud******************************//
 	// initialize PointClouds
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-	pcl::PointCloud<pcl::PointXYZ>::Ptr final (new pcl::PointCloud<pcl::PointXYZ>);
-
-	cloud->width    = 100;
-	cloud->height   = 1;
-	cloud->is_dense = false;
-	cloud->points.resize (cloud->width * cloud->height);
-
-	std::string file = RANSACSORCESDIR + std::string("/points.txt"); // read cloud from file
-	std::cout << file << std::endl;
-	readCoords(cloud, file); //tranfer the data from the file to a pointcloud object
-	// populate our PointCloud with points
-
-	std::vector<int> inliers; // a vector for storing the indexes of the inliers of the model
-
-	// created RandomSampleConsensus object and compute the appropriated model
-	pcl::SampleConsensusModelLine<pcl::PointXYZ>::Ptr
-			model_l (new pcl::SampleConsensusModelLine<pcl::PointXYZ> (cloud));
-	pcl::RandomSampleConsensus<pcl::PointXYZ> rans(model_l); // create ransac object for the target cloud
-	rans.setDistanceThreshold(.12); //a point is a inlier if the distance between it the fitted line is less than the set value,
-	rans.computeModel();
-	rans.getInliers(inliers); // get the indexes of the inliers with respect to the original cloud
-	Eigen::VectorXf mcoeff;
-	rans.getModelCoefficients(mcoeff);// get the coefficients of the fitted line/model, which is the two points that the
-												// fitted line passes through in this case, thus capable to form the two-point
-												// form of a straight line
-
-	pcl::ModelCoefficients k;
-	std::vector<int> model;
-	rans.getModel(model);
-	//for(auto &k : model) std::cout << k << std::endl;
-
-	for(int i = 0; i != mcoeff.size(); i++)
-	{
-		double j =  mcoeff[i];
-		k.values.push_back(j);
-		std::cout << j << std::endl;
-	}
-
-	// copies all inliers of the model computed to another PointCloud
-	pcl::copyPointCloud<pcl::PointXYZ>(*cloud, inliers, *final);
-
-	//******************first cloud******************************//
-	// initialize PointClouds
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_2 (new pcl::PointCloud<pcl::PointXYZ>);
-	pcl::PointCloud<pcl::PointXYZ>::Ptr final_2 (new pcl::PointCloud<pcl::PointXYZ>);
-
-	cloud_2->width    = 100;
-	cloud_2->height   = 1;
-	cloud_2->is_dense = false;
-	cloud_2->points.resize (cloud->width * cloud->height);
-
-	std::string file_2 = RANSACSORCESDIR + std::string("/points2.txt"); // read cloud from file
-	std::cout << file_2 << std::endl;
-	readCoords(cloud_2, file_2); //tranfer the data from the file to a pointcloud object
-	// populate our PointCloud with points
-
-	std::vector<int> inliers_2; // a vector for storing the indexes of the inliers of the model
-
-	// created RandomSampleConsensus object and compute the appropriated model
-	pcl::SampleConsensusModelLine<pcl::PointXYZ>::Ptr
-			model_l_2 (new pcl::SampleConsensusModelLine<pcl::PointXYZ> (cloud_2));
-	pcl::RandomSampleConsensus<pcl::PointXYZ> rans_2(model_l_2); // create ransac object for the target cloud
-	rans_2.setDistanceThreshold(.50); //a point is a inlier if the distance between it the fitted line is less than the set value,
-	rans_2.computeModel();
-	rans_2.getInliers(inliers_2); // get the indexes of the inliers with respect to the original cloud
-	Eigen::VectorXf mcoeff_2;
-	rans_2.getModelCoefficients(mcoeff_2);// get the coefficients of the fitted line/model, which is the two points that the
-	// fitted line passes through in this case, thus capable to form the two-point
-	// form of a straight line
-
-	pcl::ModelCoefficients k_2;
-	std::vector<int> model_2;
-	rans_2.getModel(model_2);
-	//for(auto &k : model) std::cout << k << std::endl;
-
-	for(int i = 0; i != mcoeff_2.size(); i++)
-	{
-		double j =  mcoeff_2[i];
-		k_2.values.push_back(j);
-		std::cout << j << std::endl;
-	}
-
-	// copies all inliers of the model computed to another PointCloud
-	pcl::copyPointCloud<pcl::PointXYZ>(*cloud_2, inliers_2, *final_2);
+//	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+//	pcl::PointCloud<pcl::PointXYZ>::Ptr final (new pcl::PointCloud<pcl::PointXYZ>);
+//	std::string file = RANSACSORCESDIR + std::string("/points.txt");
+//	pcl::ModelCoefficients k;
+//
+//	fitline(file, final, k);
+//
+//	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_2 (new pcl::PointCloud<pcl::PointXYZ>);
+//	pcl::PointCloud<pcl::PointXYZ>::Ptr final_2 (new pcl::PointCloud<pcl::PointXYZ>);
+//
+//	std::string file_2 = RANSACSORCESDIR + std::string("/points2.txt");
+//	pcl::ModelCoefficients k_2;
+//
+//	fitline(file_2, final_2, k_2);
+//	Eigen::Vector4f intersect_pt;
+//
+//	pcl::PointCloud<pcl::PointXYZ>::Ptr intersect (new pcl::PointCloud<pcl::PointXYZ>);
+//	find_intersection(k, k_2, intersect_pt, intersect);
+//
+//
 
 
-	// creates the visualization object and adds either our original cloud or all of the inliers
-	// depending on the command line arguments specified.
-	pcl::visualization::PCLVisualizer::Ptr viewer;
-//	if (pcl::console::find_argument (argc, argv, "-f") >= 0 || pcl::console::find_argument (argc, argv, "-sf") >= 0)
-//		viewer = simpleVis(final);
-//	else
-//		viewer = simpleVis(cloud);
-//	viewer = simpleVis(cloud);
-//	viewer->addCoordinateSystem (1.0);
-//	viewer->spin();
-	//std::this_thread::sleep_for(1000ms);
-
-	viewer = simpleVis(final);
-	viewer->addPointCloud(final_2);
-	viewer->addCoordinateSystem();
-
-	auto k_ex = k;
-	auto k_ex_2 = k_2;
-
-	k_ex.values[0] = k.values[0] + ((k.values[3]-k.values[0])*10);
-	k_ex.values[1] = k.values[1] + ((k.values[4]-k.values[1])*10);
-	k_ex.values[3] = k.values[3] + ((k.values[3]-k.values[0])*-10);
-	k_ex.values[4] = k.values[4] + ((k.values[4]-k.values[1])*-10);
-
-	k_ex_2.values[0] = k_2.values[0] + ((k_2.values[3]-k_2.values[0])*10);
-	k_ex_2.values[1] = k_2.values[1] + ((k_2.values[4]-k_2.values[1])*10);
-	k_ex_2.values[3] = k_2.values[3] + ((k_2.values[3]-k_2.values[0])*-10);
-	k_ex_2.values[4] = k_2.values[4] + ((k_2.values[4]-k_2.values[1])*-10);
-
-	viewer->addLine(k_ex, "line one");
-	viewer->addLine(k_ex_2, "line two");
-	while (!viewer->wasStopped ())
-	{
-		viewer->spinOnce (100);
-		std::this_thread::sleep_for(100ms);
-	}
 	return 0;
 }

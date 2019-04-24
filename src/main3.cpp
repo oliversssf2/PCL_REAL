@@ -45,12 +45,20 @@ int main()
 	//std::thread distanceDisplayThread(distanceDisplay, std::ref(data));
 
 	char t;
+	bool my_panel_activate = false;
 	while (app) {
 		data = gen.wait_for_frames().apply_filter(printer).apply_filter(color_map);
 		app.show(data);
 
+		ImGui_ImplGlfw_NewFrame(1);
+		ImGui::Begin("Panel", &my_panel_activate);
+		if (ImGui::Button("Capture", {50, 50})) {
+			gen.Gen_compute();
+		}
+		ImGui::Text("Distance from the middle : %f", gen.midDist());
+		ImGui::End();
+		ImGui::Render();
 		//Render the UI
-		//Img
     }
 	//if(distanceDisplayThread.joinable())
 	//	distanceDisplayThread.join();

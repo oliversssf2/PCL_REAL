@@ -93,6 +93,11 @@ main(int argc, char** argv)
 			viewer->spinOnce(100);
 			std::this_thread::sleep_for(100ms);
 		}
+		viewer->removeAllShapes();
+		viewer->removeAllPointClouds();
+		viewer->removeAllCoordinateSystems();
+		viewer->close();
+		viewer->close();
 	}
 	//******************first cloud******************************//
 	// initialize PointClouds

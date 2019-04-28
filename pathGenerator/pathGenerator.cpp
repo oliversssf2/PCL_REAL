@@ -5,10 +5,13 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 #include "pathGenerator.h"
 
-pathGenerator::pathGenerator() {
+pathGenerator::pathGenerator() : align_to_color(rs2::align(RS2_STREAM_COLOR)) {
 	rs2::config cfg;
 	cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
 	cfg.enable_stream(RS2_STREAM_COLOR, 640, 480);
+
+	//align_to_color = rs2::align(RS2_STREAM_COLOR);
+
 	pipe_profile = pipe.start(cfg);
 	std::string t{"dist.csv"};
 	distFileName = DISTOUTPUTPREFIX + t;
@@ -40,6 +43,13 @@ void pathGenerator::StatisticalOutlierRemoval(pcl::PointCloud<pcl::PointXYZ>::Pt
     std::cout << "============================stat=========================" << std::endl;
     for (auto x : output->points)
         std::cout << x << std::endl;
+}
+
+void VoxelGrid(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output) {
+	pcl::VoxelGrid<pcl::PointXYZ> grid;
+	grid.setInputCloud(input);
+	grid.setLeafSize(0.05f, 0.05f, 0.05f);
+	grid.filter(*output);
 }
 
 void pathGenerator::NormalEstimation(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointNormal>::Ptr output, pcl::PointCloud<pcl::PointXYZ>::Ptr searchSurface) {
@@ -164,6 +174,7 @@ void pathGenerator::updateSettings(){
 
 void pathGenerator::Gen_compute() {
     frames = pipe.wait_for_frames();
+	frames = align_to_color.process(frames);
     auto depth = frames.get_depth_frame();
     points = pc.calculate(depth);
 
@@ -198,9 +209,12 @@ rs2::frameset pathGenerator::wait_for_frames() {
 }
 
 float pathGenerator::midDist() {
-	rs2::depth_frame depth = frames.get_depth_frame();
-	float ret = depth.get_distance(depth.get_width() / 2, depth.get_height() / 2);
-	distfile << ret << ',' << std::endl;
-	return ret;
+	if (frameCnt % captureRate == 0) {
+		rs2::depth_frame depth = frames.get_depth_frame();
+		float ret = depth.get_distance(depth.get_width() / 2, depth.get_height() / 2);
+		distfile << ret << ',' << std::endl;
+		return ret;
+	}
+	++frameCnt;
 }
 

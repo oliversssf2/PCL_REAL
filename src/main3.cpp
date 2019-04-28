@@ -36,6 +36,7 @@ int main()
 
 	rs2::colorizer color_map;
 	rs2::rates_printer printer;
+	rs2::align align_to_color(RS2_STREAM_COLOR);
     int index = 0;
     pathGenerator gen;
     gen.updateSettings();
@@ -47,7 +48,9 @@ int main()
 	char t;
 	bool my_panel_activate = false;
 	while (app) {
-		data = gen.wait_for_frames().apply_filter(printer).apply_filter(color_map);
+		data = gen.wait_for_frames();
+		data = align_to_color.process(data);
+		data = data.apply_filter(printer).apply_filter(color_map);
 		app.show(data);
 
 		ImGui_ImplGlfw_NewFrame(1);

@@ -14,6 +14,8 @@
 #include <pcl/filters/passthrough.h>
 #include <pcl/features/normal_3d.h>
 
+#include <pcl/filters/voxel_grid.h>
+
 
 #include <librealsense2/rs.hpp>
 #include "../realsense/cam_util.h"
@@ -48,6 +50,8 @@ protected:
     void Reorganize(pcl::PointCloud<pcl::PointNormal>::Ptr input);
     void Exaggerate(pcl::PointCloud<pcl::PointNormal>::Ptr input);
 
+	void VoxelGrid(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output);
+
     inline void setPassLimit(float _limitMax, float _limitMin, std::string _passfield){ limitMax = _limitMax; limitMin = _limitMin; passfield = _passfield;}
     inline void setDownsample(int _downsample){downsample = _downsample;}
     inline void setStatOutRem(int _MeanK, float _StddevMulThresh){MeanK = _MeanK; StddevMulThresh = _StddevMulThresh;}
@@ -58,6 +62,7 @@ private:
     rs2::points points;
     rs2::pointcloud pc;
     rs2::pipeline_profile pipe_profile;
+	rs2::align align_to_color;
 
     PC_Data data;
     rs2::frameset frames;
@@ -83,6 +88,8 @@ private:
 
     std::string distFileName;
 	std::ofstream distfile;
+	int frameCnt = 0;
+	int captureRate = 15;
 };
 
 

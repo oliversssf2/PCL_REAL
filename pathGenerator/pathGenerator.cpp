@@ -184,7 +184,7 @@ void pathGenerator::Gen_compute() {
     m.f_name = str;
     m.index = data.count-1;
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr original = points_to_pcl(points, downsample);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr original = points_to_pcl(points);
     data.original_Clouds.push_back(original);
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr stage_1 = points_to_pcl(points, downsample);
@@ -198,6 +198,13 @@ void pathGenerator::Gen_compute() {
     NormalEstimation(stage_3, stage_4, original);
     NaNRemoval(stage_4, m.cloud);
     Reorganize(m.cloud);
+
+	pcl::io::savePCDFileASCII("1.original.pcd", *original);
+	pcl::io::savePCDFileASCII("2.downsample.pcd", *stage_1);
+	pcl::io::savePCDFileASCII("3.passthrough.pcd", *stage_2);
+	pcl::io::savePCDFileASCII("4.statisticalOutlierRemoval.pcd", *stage_3);
+	pcl::io::savePCDFileASCII("5.normal.pcd", *stage_4);
+
 
     data.processed_Clouds.push_back(m);
     savePointNormal(m, false, true, data.indices_order.back());

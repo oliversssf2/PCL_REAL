@@ -7,5 +7,11 @@ add_compile_options(${PCL_DEFINITIONS})
 
 target_link_libraries(Main3 ${PCL_LIBRARIES} ${deps})
 
+add_executable(Display display.cpp)
+target_include_directories(Display PUBLIC ${PCL_INCLUDE_DIRECTORIES} ${incs})
+target_link_directories(Display PUBLIC ${PCL_LIBRARY_DIRS} ${dep_dirs})
+
+target_link_libraries(Display ${PCL_LIBRARIES} ${deps})
+
 message("THERE ARE ${deps}")
 

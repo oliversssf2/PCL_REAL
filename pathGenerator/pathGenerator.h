@@ -13,7 +13,8 @@
 
 #include <pcl/filters/passthrough.h>
 #include <pcl/features/normal_3d.h>
-
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
 
 
@@ -68,7 +69,7 @@ private:
     rs2::frameset frames;
 
     //*downsample
-    int downsample = 400;
+    int downsample = 100;
 
     //**passthrough properties
     float limitMax = 0.35f;

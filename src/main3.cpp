@@ -30,18 +30,21 @@ void distanceDisplay(rs2::frameset &data) {
 
 int main()
 {
-	rs2::log_to_console(RS2_LOG_SEVERITY_ERROR);
-	window app(1280, 720, "Realsense Capture");
+	//rs2::log_to_console(RS2_LOG_SEVERITY_ERROR);
+	window app(1280, 480, "Realsense Capture");
 	ImGui_ImplGlfw_Init(app, false);
 
 	rs2::colorizer color_map;
 	rs2::rates_printer printer;
-	rs2::align align_to_color(RS2_STREAM_COLOR);
+	rs2::align align_to_depth(RS2_STREAM_DEPTH);
     int index = 0;
     pathGenerator gen;
     gen.updateSettings();
 
 	rs2::frameset data = gen.wait_for_frames();
+
+	float clipDist = 0.0f;
+	float voxelLeafSize = 0.0f;
 
 	//std::thread distanceDisplayThread(distanceDisplay, std::ref(data));
 
@@ -49,7 +52,7 @@ int main()
 	bool my_panel_activate = false;
 	while (app) {
 		data = gen.wait_for_frames();
-		data = align_to_color.process(data);
+		data = align_to_depth.process(data);
 		data = data.apply_filter(printer).apply_filter(color_map);
 		app.show(data);
 
@@ -58,6 +61,10 @@ int main()
 		if (ImGui::Button("Capture", {50, 50})) {
 			gen.Gen_compute();
 		}
+
+		ImGui::SliderFloat("MaxClipDist", &clipDist, 0.16, 1.1);
+		ImGui::SliderFloat("Voxel Grid Size", &voxelLeafSize, 0, 0.1);
+
 		ImGui::Text("Distance from the middle : %f", gen.midDist());
 		ImGui::End();
 		ImGui::Render();

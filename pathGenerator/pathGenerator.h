@@ -51,19 +51,21 @@ protected:
     void Reorganize(pcl::PointCloud<pcl::PointNormal>::Ptr input);
     void Exaggerate(pcl::PointCloud<pcl::PointNormal>::Ptr input);
 
-	void VoxelGrid(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output);
+	void voxelGrid(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output);
 
     inline void setPassLimit(float _limitMax, float _limitMin, std::string _passfield){ limitMax = _limitMax; limitMin = _limitMin; passfield = _passfield;}
     inline void setDownsample(int _downsample){downsample = _downsample;}
     inline void setStatOutRem(int _MeanK, float _StddevMulThresh){MeanK = _MeanK; StddevMulThresh = _StddevMulThresh;}
     inline void setNormalEst(float _searchRadius){searchRadius = _searchRadius;}
 
+	inline void setVoxelLeafSize(float _voxelLeafSize) { voxelLeafSize = _voxelLeafSize; }
+
 private:
     rs2::pipeline pipe;
     rs2::points points;
     rs2::pointcloud pc;
     rs2::pipeline_profile pipe_profile;
-	rs2::align align_to_color;
+	rs2::align align_to_depth;
 
     PC_Data data;
     rs2::frameset frames;
@@ -73,7 +75,7 @@ private:
 
     //**passthrough properties
     float limitMax = 0.35f;
-	float limitMin = 0.15f;
+	float limitMin = 0.16f;
     std::string passfield = "z";
 
     //**StatisticalOutlierRemoval properties
@@ -91,6 +93,9 @@ private:
 	std::ofstream distfile;
 	int frameCnt = 0;
 	int captureRate = 15;
+
+	//voxel Grid properties
+	float voxelLeafSize = 0.01f;
 };
 
 

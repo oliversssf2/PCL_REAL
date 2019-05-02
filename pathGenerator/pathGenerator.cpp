@@ -5,10 +5,12 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 #include "pathGenerator.h"
 
-pathGenerator::pathGenerator() : align_to_color(rs2::align(RS2_STREAM_COLOR)) {
+pathGenerator::pathGenerator() : align_to_depth(rs2::align(RS2_STREAM_DEPTH)) {
 	rs2::config cfg;
 	cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
+	//cfg.enable_stream(RS2_STREAM_DEPTH, 424, 240);
 	cfg.enable_stream(RS2_STREAM_COLOR, 640, 480);
+	//cfg.enable_stream(RS2_STREAM_COLOR, 424, 240);
 
 	//align_to_color = rs2::align(RS2_STREAM_COLOR);
 
@@ -45,10 +47,10 @@ void pathGenerator::StatisticalOutlierRemoval(pcl::PointCloud<pcl::PointXYZ>::Pt
         std::cout << x << std::endl;
 }
 
-void VoxelGrid(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output) {
+void pathGenerator::voxelGrid(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output) {
 	pcl::VoxelGrid<pcl::PointXYZ> grid;
 	grid.setInputCloud(input);
-	grid.setLeafSize(0.05f, 0.05f, 0.05f);
+	grid.setLeafSize(voxelLeafSize, voxelLeafSize, voxelLeafSize);
 	grid.filter(*output);
 }
 
@@ -174,7 +176,7 @@ void pathGenerator::updateSettings(){
 
 void pathGenerator::Gen_compute() {
     frames = pipe.wait_for_frames();
-	frames = align_to_color.process(frames);
+	frames = align_to_depth.process(frames);
     auto depth = frames.get_depth_frame();
     points = pc.calculate(depth);
 
@@ -187,21 +189,23 @@ void pathGenerator::Gen_compute() {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr original = points_to_pcl(points);
     data.original_Clouds.push_back(original);
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr stage_1 = points_to_pcl(points, downsample);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr stage_1 = points_to_pcl(points);
     pcl::PointCloud<pcl::PointXYZ>::Ptr stage_2 (new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr stage_voxel(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointXYZ>::Ptr stage_3 (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointNormal>::Ptr stage_4 (new pcl::PointCloud<pcl::PointNormal>);
     pcl::PointCloud<pcl::PointNormal>::Ptr stage_5 (new pcl::PointCloud<pcl::PointNormal>);
 
     PassThrough(stage_1, stage_2);
-    StatisticalOutlierRemoval(stage_2, stage_3);
+	voxelGrid(stage_2, stage_voxel);
+	StatisticalOutlierRemoval(stage_voxel, stage_3);
     NormalEstimation(stage_3, stage_4, original);
     NaNRemoval(stage_4, m.cloud);
     Reorganize(m.cloud);
 
 	pcl::io::savePCDFileASCII("1.original.pcd", *original);
-	pcl::io::savePCDFileASCII("2.downsample.pcd", *stage_1);
-	pcl::io::savePCDFileASCII("3.passthrough.pcd", *stage_2);
+	pcl::io::savePCDFileASCII("2.passthrough.pcd", *stage_2);
+	pcl::io::savePCDFileASCII("3.voxelGrid.pcd", *stage_voxel);
 	pcl::io::savePCDFileASCII("4.statisticalOutlierRemoval.pcd", *stage_3);
 	pcl::io::savePCDFileASCII("5.normal.pcd", *stage_4);
 

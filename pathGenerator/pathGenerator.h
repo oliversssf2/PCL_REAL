@@ -74,8 +74,10 @@ private:
     int downsample = 100;
 
     //**passthrough properties
-    float limitMax = 0.35f;
-	float limitMin = 0.16f;
+    float limitMax = 0.2f;
+	float limitMin = 0.1f;
+//	float limitMax = 0.35f;
+//	float limitMin = 0.16f;
     std::string passfield = "z";
 
     //**StatisticalOutlierRemoval properties

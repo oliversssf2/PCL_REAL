@@ -7,10 +7,10 @@
 
 pathGenerator::pathGenerator() : align_to_depth(rs2::align(RS2_STREAM_DEPTH)) {
 	rs2::config cfg;
-	cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
-	//cfg.enable_stream(RS2_STREAM_DEPTH, 424, 240);
-	cfg.enable_stream(RS2_STREAM_COLOR, 640, 480);
-	//cfg.enable_stream(RS2_STREAM_COLOR, 424, 240);
+	//cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
+	cfg.enable_stream(RS2_STREAM_DEPTH, 424, 240);
+	//cfg.enable_stream(RS2_STREAM_COLOR, 640, 480);
+	cfg.enable_stream(RS2_STREAM_COLOR, 424, 240);
 
 	//align_to_color = rs2::align(RS2_STREAM_COLOR);
 

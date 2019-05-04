@@ -46,6 +46,8 @@ int main()
 	float clipDist = 0.0f;
 	float voxelLeafSize = 0.0f;
 
+	float passmin, passmax;
+
 	//std::thread distanceDisplayThread(distanceDisplay, std::ref(data));
 
 	char t;
@@ -60,6 +62,11 @@ int main()
 		ImGui::Begin("Panel", &my_panel_activate);
 		if (ImGui::Button("Capture", {50, 50})) {
 			gen.Gen_compute();
+		}
+		ImGui::SliderFloat("minPass", &passmin, 0, 1.1);
+		ImGui::SliderFloat("maxPass", &passmax, 0, 1.1);
+		if (ImGui::Button("Set", {50, 50})) {
+			gen.setPassLimit(passmax, passmin, "z");
 		}
 
 		ImGui::SliderFloat("MaxClipDist", &clipDist, 0.16, 1.1);

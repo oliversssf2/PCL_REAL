@@ -42,6 +42,25 @@ public:
 	rs2::frameset wait_for_frames();
 	float midDist();
 
+	inline void setPassLimit(float _limitMax, float _limitMin, std::string _passfield) {
+		limitMax = _limitMax;
+		std::cout << limitMax << std::endl;
+		limitMin = _limitMin;
+		passfield = _passfield;
+	}
+
+	inline void setDownsample(int _downsample) { downsample = _downsample; }
+
+	inline void setStatOutRem(int _MeanK, float _StddevMulThresh) {
+		MeanK = _MeanK;
+		StddevMulThresh = _StddevMulThresh;
+	}
+
+	inline void setNormalEst(float _searchRadius) { searchRadius = _searchRadius; }
+
+	inline void setVoxelLeafSize(float _voxelLeafSize) { voxelLeafSize = _voxelLeafSize; }
+
+
 protected:
     void PassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output);
     void StatisticalOutlierRemoval(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output);
@@ -53,12 +72,6 @@ protected:
 
 	void voxelGrid(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output);
 
-    inline void setPassLimit(float _limitMax, float _limitMin, std::string _passfield){ limitMax = _limitMax; limitMin = _limitMin; passfield = _passfield;}
-    inline void setDownsample(int _downsample){downsample = _downsample;}
-    inline void setStatOutRem(int _MeanK, float _StddevMulThresh){MeanK = _MeanK; StddevMulThresh = _StddevMulThresh;}
-    inline void setNormalEst(float _searchRadius){searchRadius = _searchRadius;}
-
-	inline void setVoxelLeafSize(float _voxelLeafSize) { voxelLeafSize = _voxelLeafSize; }
 
 private:
     rs2::pipeline pipe;
@@ -74,10 +87,10 @@ private:
     int downsample = 100;
 
     //**passthrough properties
-    float limitMax = 0.2f;
-	float limitMin = 0.1f;
-//	float limitMax = 0.35f;
-//	float limitMin = 0.16f;
+//    float limitMax = 0.2f;
+//	float limitMin = 0.1f;
+	float limitMax = 0.400f;
+	float limitMin = 0.100f;
     std::string passfield = "z";
 
     //**StatisticalOutlierRemoval properties

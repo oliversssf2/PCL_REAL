@@ -7,10 +7,10 @@
 
 pathGenerator::pathGenerator() : align_to_depth(rs2::align(RS2_STREAM_DEPTH)) {
 	rs2::config cfg;
-//	cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
-	cfg.enable_stream(RS2_STREAM_DEPTH, 424, 240);
-//	cfg.enable_stream(RS2_STREAM_COLOR, 640, 480);
-	cfg.enable_stream(RS2_STREAM_COLOR, 424, 240);
+	cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
+	//cfg.enable_stream(RS2_STREAM_DEPTH, 424, 240);
+	cfg.enable_stream(RS2_STREAM_COLOR, 640, 480);
+	//cfg.enable_stream(RS2_STREAM_COLOR, 424, 240);
 
 	pipe_profile = pipe.start(cfg);
 	std::string t{"dist.csv"};
@@ -25,10 +25,20 @@ pathGenerator::~pathGenerator() {
 
 void pathGenerator::PassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr input, pcl::PointCloud<pcl::PointXYZ>::Ptr output) {
     pcl::PassThrough<pcl::PointXYZ> pass;
-    pass.setInputCloud(input);
-    pass.setFilterFieldName(passfield);
-    pass.setFilterLimits(limitMin, limitMax);
-    pass.filter(*output);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr stage_x(new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr stage_y(new pcl::PointCloud<pcl::PointXYZ>);
+	pass.setInputCloud(input);
+	pass.setFilterFieldName(passfield);
+	pass.setFilterLimits(limitMin, limitMax);
+	pass.filter(*stage_x);
+	pass.setInputCloud(stage_x);
+	pass.setFilterFieldName("x");
+	pass.setFilterLimits(-0.5, 0.5);
+	pass.filter(*stage_y);
+	pass.setInputCloud(stage_y);
+	pass.setFilterFieldName("y");
+	pass.setFilterLimits(-0.17, 0.17);
+	pass.filter(*output);
     std::cout << "============================passthrough=========================" << std::endl;
     for (auto x : output->points)
         std::cout << x << std::endl;
@@ -87,6 +97,7 @@ void pathGenerator::NaNRemoval(pcl::PointCloud<pcl::PointNormal>::Ptr input,pcl:
 }
 
 void pathGenerator::Reorganize(pcl::PointCloud<pcl::PointNormal>::Ptr input) {
+	int i = 0;
     std::vector<size_t> idx(input->width);
     std::iota(idx.begin(), idx.end(), 0);
     std::sort(idx.begin(), idx.end(), [&input](size_t i, size_t i2){ return (input->points.at(i).x < input->points.at(i2).x);});
@@ -97,8 +108,16 @@ void pathGenerator::Reorganize(pcl::PointCloud<pcl::PointNormal>::Ptr input) {
     {
         if((input->points.at(*it_flag).x - input->points.at(*it_tgt).x) > reorganizeRange)
         {
-            std::sort(it_tgt, it_flag, [&input](size_t i, size_t i2){ return (input->points.at(i).y < input->points.at(i2).y);});
-            it_tgt = it_flag;
+	        if (i % 2 == 0) {
+		        std::sort(it_tgt, it_flag,
+		                  [&input](size_t i, size_t i2) { return (input->points.at(i).y < input->points.at(i2).y); });
+
+	        } else {
+		        std::sort(it_tgt, it_flag,
+		                  [&input](size_t i, size_t i2) { return (input->points.at(i).y > input->points.at(i2).y); });
+	        }
+	        it_tgt = it_flag;
+	        i++;
         }
     }
     for(auto v : idx)
@@ -187,7 +206,7 @@ void pathGenerator::Gen_compute() {
 	pcl::PointCloud<pcl::PointXYZ>::Ptr original = points_to_pcl(points);
     data.original_Clouds.push_back(original);
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr stage_1 = points_to_pcl(points);
+	pcl::PointCloud<pcl::PointXYZ>::Ptr stage_1 = points_to_pcl(points, 100);
     pcl::PointCloud<pcl::PointXYZ>::Ptr stage_2 (new pcl::PointCloud<pcl::PointXYZ>);
 	pcl::PointCloud<pcl::PointXYZ>::Ptr stage_voxel(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointXYZ>::Ptr stage_3 (new pcl::PointCloud<pcl::PointXYZ>);
@@ -195,8 +214,8 @@ void pathGenerator::Gen_compute() {
     pcl::PointCloud<pcl::PointNormal>::Ptr stage_5 (new pcl::PointCloud<pcl::PointNormal>);
 
     PassThrough(stage_1, stage_2);
-	voxelGrid(stage_2, stage_voxel);
-	StatisticalOutlierRemoval(stage_voxel, stage_3);
+	StatisticalOutlierRemoval(stage_2, stage_voxel);
+	voxelGrid(stage_voxel, stage_3);
     NormalEstimation(stage_3, stage_4, original);
     NaNRemoval(stage_4, m.cloud);
     Reorganize(m.cloud);

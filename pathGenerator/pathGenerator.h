@@ -93,16 +93,17 @@ private:
 	float limitMin = 0.100f;
     std::string passfield = "z";
 
+
     //**StatisticalOutlierRemoval properties
     int MeanK = 30;
-    float StddevMulThresh = 1.0;
+	float StddevMulThresh = 0.7;
 
     //**NormalEstimation properties
     float searchRadius = 0.03;
 
     //**reorganize propertiesh
 
-    float reorganizeRange = 0.008;
+	float reorganizeRange = 0.01f;
 
     std::string distFileName;
 	std::ofstream distfile;
@@ -110,7 +111,7 @@ private:
 	int captureRate = 15;
 
 	//voxel Grid properties
-	float voxelLeafSize = 0.01f;
+	float voxelLeafSize = 0.005f;
 };
 
 

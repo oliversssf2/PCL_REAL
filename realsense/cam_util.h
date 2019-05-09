@@ -31,4 +31,6 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr points_to_pcl(const rs2::points& points);
 std::pair<std::string, std::string> savePointNormal(PCDPointNormal cloud, bool pcd, bool csv, const std::vector<size_t> &idx);
 std::pair<std::string, std::string> savePointNormal(PCDPointNormal cloud, bool pcd, bool csv);
 
+void readCoords(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, std::string file);
+
 #endif //PCL_REAL_CAM_UTIL_H

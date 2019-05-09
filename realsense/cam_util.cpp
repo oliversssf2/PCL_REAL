@@ -24,7 +24,8 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr points_to_pcl(const rs2::points& points, int
     int height = cloud->height;
     auto it = cloud->points.begin();
 
-    for (int i = 0; i < height; i++) {
+
+	for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
             it->x = ptr->x;
             it->y = ptr->y;
@@ -73,6 +74,7 @@ std::pair<std::string, std::string> savePointNormal(PCDPointNormal cloud, bool p
             exit(1);
         }
 
+
         for(auto x : idx)
         {
             myfile << cloud.cloud->points.at(x).x * 1000 << ','
@@ -92,5 +94,31 @@ std::pair<std::string, std::string> savePointNormal(PCDPointNormal cloud, bool p
     std::vector<size_t> idx(cloud.cloud->size());
     std::iota(idx.begin(), idx.end(), 0);
     return savePointNormal(cloud, pcd, csv, idx);
+}
+
+void readCoords(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, std::string file)
+{
+	std::ifstream myfile;
+	myfile.open(file, std::ios::in);
+	if(!myfile.is_open())
+	{
+		std::cerr << "CAN'T READ FILE" << std::endl;
+		return;
+	}
+	size_t cnt = 0;
+	for(auto &pt : cloud->points)
+	{
+		if(myfile >> pt.x >> pt.y)
+		{
+			pt.z = 0;
+			std::cout << pt.x << '\t' << pt.y << std::endl;
+			cnt++;
+		}
+		else
+			break;
+	}
+	cloud->width = cnt;
+	cloud->resize(cloud->width * cloud->height);
+	myfile.close();
 }
 
